@@ -71,13 +71,14 @@ class SabreSwap(TransformationPass):
     `arXiv:1809.02573 <https://arxiv.org/pdf/1809.02573.pdf>`_
     """
 
-    def __init__(self, coupling_map, heuristic="basic", seed=None, fake_run=False, trials=None):
+    def __init__(self, coupling_map, heuristic="wait_time", seed=None, fake_run=False, trials=None):
         r"""SabreSwap initializer.
 
         Args:
             coupling_map (Union[CouplingMap, Target]): CouplingMap of the target backend.
             heuristic (str): The type of heuristic to use when deciding best
                 swap strategy ('basic', 'lookahead', 'decay' or 'wait_time').
+                Defaults to 'wait_time'.
             seed (int): random seed used to tie-break among candidate swaps.
             fake_run (bool): if true, it only pretend to do routing, i.e., no
                 swap is effectively added.
@@ -136,7 +137,7 @@ class SabreSwap(TransformationPass):
 
             - 'wait_time':
 
-            This is the same as 'decay', with an additional term that charges each candidate
+            This is the same as 'lookahead', with an additional term that charges each candidate
             SWAP for the estimated number of two-qubit layers it must wait before both of its
             physical qubits are free.  Each two-qubit interaction routed by Sabre occupies one
             layer (consecutive gates on the same pair of qubits are routed as a single
@@ -146,10 +147,10 @@ class SabreSwap(TransformationPass):
 
             .. math::
 
-                H_{wait} = max(decay(SWAP.q_1), decay(SWAP.q_2)) {
-                    \frac{1}{\left|{F}\right|} \sum_{gate \in F} D[\pi(gate.q_1)][\pi(gate.q2)]\\
+                H_{wait} = \frac{1}{\left|{F}\right|}
+                    \sum_{gate \in F} D[\pi(gate.q_1)][\pi(gate.q2)]\\
                     + W *\frac{1}{\left|{E}\right|} \sum_{gate \in E} D[\pi(gate.q_1)][\pi(gate.q2)]
-                    } + V * max(ready(SWAP.q_1), ready(SWAP.q_2))
+                    + V * max(ready(SWAP.q_1), ready(SWAP.q_2))
         """
         super().__init__()
         self._routing_target = None

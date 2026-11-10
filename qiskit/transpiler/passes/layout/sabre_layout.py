@@ -151,8 +151,8 @@ class SabreLayout(TransformationPass):
                 SabreLayout to run the routing stage internally but not use that result.
             heuristic (Heuristic): An optional ``qiskit._accelerate.sabre.Heuristic`` used for
                 both layout search and integrated routing, including layout search when
-                ``skip_routing`` is ``True``. If ``None``, use the existing decay heuristic
-                with wait-time scoring disabled. A supplied heuristic replaces the complete
+                ``skip_routing`` is ``True``. If ``None``, use the ``"wait_time"`` heuristic
+                from :class:`.SabreSwap`. A supplied heuristic replaces the complete
                 default configuration; its weights, scaling and attempt limit are used as given.
                 This option is mutually exclusive with ``routing_pass``.
 
@@ -290,7 +290,7 @@ class SabreLayout(TransformationPass):
                 Heuristic(attempt_limit=10 * self.target.num_qubits)
                 .with_basic(1.0, SetScaling.Constant)
                 .with_lookahead([0.5 / self.target.num_qubits], SetScaling.Constant)
-                .with_decay(0.001, 5)
+                .with_wait_time(0.0025)
             )
         sabre_start = time.perf_counter()
         # If `skip_routing`, then `out_dag` and `final` are meaningless but well-typed.

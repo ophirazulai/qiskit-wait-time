@@ -391,7 +391,7 @@ class SabreSwapPassManager(PassManagerStagePlugin):
             trial_count = _get_trial_count(5)
             routing_pass = SabreSwap(
                 coupling_map_routing,
-                heuristic="basic",
+                heuristic="wait_time",
                 seed=seed_transpiler,
                 trials=trial_count,
             )
@@ -406,7 +406,7 @@ class SabreSwapPassManager(PassManagerStagePlugin):
             trial_count = _get_trial_count(5)
             routing_pass = SabreSwap(
                 coupling_map_routing,
-                heuristic="decay",
+                heuristic="wait_time",
                 seed=seed_transpiler,
                 trials=trial_count,
             )
@@ -425,7 +425,7 @@ class SabreSwapPassManager(PassManagerStagePlugin):
 
             routing_pass = SabreSwap(
                 coupling_map_routing,
-                heuristic="decay",
+                heuristic="wait_time",
                 seed=seed_transpiler,
                 trials=trial_count,
             )
@@ -442,7 +442,7 @@ class SabreSwapPassManager(PassManagerStagePlugin):
             trial_count = _get_trial_count(20)
             routing_pass = SabreSwap(
                 coupling_map_routing,
-                heuristic="decay",
+                heuristic="wait_time",
                 seed=seed_transpiler,
                 trials=trial_count,
             )

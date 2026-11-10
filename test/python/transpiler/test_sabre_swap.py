@@ -491,7 +491,8 @@ class TestSabreSwap(QiskitTestCase):
             decay.layout.final_index_layout(),
         )
 
-    def test_equal_score_swaps_prefer_idle_wires(self):
+    @ddt.data({}, {"heuristic": "wait_time"})
+    def test_equal_score_swaps_prefer_idle_wires(self, options):
         """Test that, with the wait-time heuristic, Sabre picks among equally scored swaps the one
         whose qubits are free earliest in the two-qubit schedule, so the swap runs in parallel with
         earlier gates."""
@@ -504,7 +505,7 @@ class TestSabreSwap(QiskitTestCase):
         qc.ensure_physical()
         coupling = CouplingMap.from_line(4)
         for seed in range(10):
-            routed = PassManager(SabreSwap(coupling, "wait_time", seed=seed, trials=1)).run(qc)
+            routed = PassManager(SabreSwap(coupling, seed=seed, trials=1, **options)).run(qc)
             if seed == 0:
                 self.assertEqual(routed.num_qubits, qc.num_qubits)
                 self.assertIsNotNone(routed.layout)

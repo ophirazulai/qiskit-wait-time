@@ -211,7 +211,7 @@ rz(0) q4835[1];
         self.assertIsInstance(res, QuantumCircuit)
         layout = res._layout.initial_layout
         self.assertEqual(
-            [layout[q] for q in qc.qubits], [4, 0, 12, 1, 16, 7, 21, 11, 26, 15, 3, 18, 10, 2]
+            [layout[q] for q in qc.qubits], [16, 22, 14, 19, 24, 11, 18, 4, 1, 13, 9, 15, 12, 23]
         )
 
     def test_layout_many_search_trials(self):
@@ -273,7 +273,7 @@ barrier q18585[5],q18585[2],q18585[8],q18585[3],q18585[6];
         self.assertIsInstance(res, QuantumCircuit)
         layout = res._layout.initial_layout
         self.assertEqual(
-            [layout[q] for q in qc.qubits], [13, 7, 18, 22, 17, 8, 14, 10, 11, 3, 16, 25, 23, 19]
+            [layout[q] for q in qc.qubits], [10, 19, 18, 13, 21, 2, 14, 20, 11, 4, 16, 12, 1, 8]
         )
 
     def test_support_var_with_rust_fastpath(self):
@@ -293,7 +293,7 @@ barrier q18585[5],q18585[2],q18585[8],q18585[3],q18585[6];
         out = SabreLayout(CouplingMap.from_line(8), seed=0, swap_trials=2, layout_trials=2)(qc)
 
         self.assertIsInstance(out, QuantumCircuit)
-        self.assertEqual(out.layout.initial_index_layout(), [2, 3, 4, 6, 5, 0, 1, 7])
+        self.assertEqual(out.layout.initial_index_layout(), [4, 3, 2, 5, 6, 0, 1, 7])
 
     def test_support_var_with_explicit_routing_pass(self):
         """Test that the logic works if an explicit routing pass is given."""
@@ -394,11 +394,17 @@ class TestSabreLayoutHeuristic(QiskitTestCase):
             .with_decay(0.001, 5)
         )
 
-    def test_default_heuristic_is_unchanged(self):
-        """Omitting the override and passing None both retain decay without wait time."""
+    def test_default_heuristic_is_wait_time(self):
+        """Omitting the override and passing None both use the wait-time preset."""
+        wait_time = (
+            Heuristic(attempt_limit=40)
+            .with_basic(1.0, SetScaling.Constant)
+            .with_lookahead([0.5 / 4], SetScaling.Constant)
+            .with_wait_time(0.0025)
+        )
         for skip_routing in (False, True):
             reference = None
-            for options in ({}, {"heuristic": None}, {"heuristic": self.decay}):
+            for options in ({}, {"heuristic": None}, {"heuristic": wait_time}):
                 with self.subTest(skip_routing=skip_routing, options=options):
                     pass_ = SabreLayout(
                         self.coupling,
@@ -413,7 +419,7 @@ class TestSabreLayoutHeuristic(QiskitTestCase):
                         wraps=sabre_layout_and_routing,
                     ) as run_native:
                         output = pass_(self.circuit)
-                    self.assertEqual(run_native.call_args.args[2], self.decay)
+                    self.assertEqual(run_native.call_args.args[2], wait_time)
                     result = (
                         output,
                         pass_.property_set["layout"],
@@ -668,7 +674,7 @@ class TestSabrePreLayout(QiskitTestCase):
         layout = pm.property_set["layout"]
         self.assertEqual(
             [layout[q] for q in self.circuit.qubits],
-            [9, 81, 54, 16, 86, 58, 92, 22, 91, 21, 57, 14, 85, 53, 79, 80],
+            [31, 100, 32, 101, 33, 63, 95, 94, 59, 88, 25, 24, 93, 23, 62, 99],
         )
 
     def test_integration_with_pass_manager(self):
@@ -682,7 +688,7 @@ class TestSabrePreLayout(QiskitTestCase):
         qct_initial_layout = qct.layout.initial_layout
         self.assertEqual(
             [qct_initial_layout[q] for q in self.circuit.qubits],
-            [12, 11, 10, 16, 17, 18, 13, 14, 9, 8, 3, 2, 1, 6, 5, 7],
+            [10, 5, 6, 7, 1, 2, 3, 8, 9, 14, 13, 18, 17, 16, 15, 11],
         )
 
 
