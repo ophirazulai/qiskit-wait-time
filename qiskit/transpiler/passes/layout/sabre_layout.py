@@ -290,7 +290,7 @@ class SabreLayout(TransformationPass):
                 Heuristic(attempt_limit=10 * self.target.num_qubits)
                 .with_basic(1.0, SetScaling.Constant)
                 .with_lookahead([0.5 / self.target.num_qubits], SetScaling.Constant)
-                .with_wait_time(0.0025)
+                .with_wait_time(0.0005)
             )
         sabre_start = time.perf_counter()
         # If `skip_routing`, then `out_dag` and `final` are meaningless but well-typed.
